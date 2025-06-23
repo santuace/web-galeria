@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Galería de Arte AI</title>
+    <link rel="stylesheet" href="estilos_finales_definitivo.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-left">
+        <img src="monograma.png" alt="Monograma" class="logo">
+    </div>
+    <div class="navbar-right">
+        <a href="#" id="openAboutMe" class="nav-link">Sobre mí</a> 
+<a href="https://www.linkedin.com/in/santiagomut/" class="nav-link" target="_blank">Contacto</a>
+    </div>
+</nav>
+
+<main class="galeria"></main>
+
+<footer>
+    <p>Hecho con amor y IA por Santiago Mut</p> 
+</footer>
+
+<div id="imageModal" class="modal">
+    <span class="close-button">&times;</span>
+    <div class="modal-content-wrapper">
+        <div id="modalMediaContainer"></div>
+    </div>
+</div>
+
+<div id="aboutMeModal" class="modal">
+    <span class="close-button about-close-button">&times;</span>
+    <div class="modal-content-wrapper">
+        <div class="about-modal-content-wrapper">
+            <div class="about-photo-container">
+                <img src="sobremifoto.jpeg" alt="Tu foto" class="about-photo">
+            </div>
+            <div class="about-text-content">
+                <h2>Sobre mí</h2>
+                <p>Este no es un portfolio. Es un mood. Una ventana a lo que hay en mi cabeza, una colección en constante mutación. Ideas, obsesiones, experimentos. Acá vas a ver retratos de personas que no existen, mundos que nadie pidió, estéticas buscadas y alegres accidentes. No hay un hilo conductor —hay una energía. Bienvenid@s a un hermoso caos.</p>
+                <p>Soy Santiago, Director Creativo con más de 12 años de carrera en agencias de publicidad y esta es mi nueva forma de crear usando herramientas de IA.<br>
+                Porque al final, todo es un prompt.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="gallery_data_restaurado.js"></script> 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const imageModal = document.getElementById('imageModal');
+    const aboutMeModal = document.getElementById('aboutMeModal');
+    const modalMediaContainer = document.getElementById('modalMediaContainer');
+    const closeImageButton = document.querySelector('#imageModal .close-button'); 
+    const openAboutMeButton = document.getElementById('openAboutMe');
+    const closeAboutMeButton = document.querySelector('#aboutMeModal .close-button');
+
+    if (imageModal) imageModal.style.display = 'none';
+    if (aboutMeModal) aboutMeModal.style.display = 'none';
+
+    const gallery = document.querySelector('.galeria');
+    galleryImages.forEach((image) => {
+        let mediaTag;
+        if (image.type === "video") {
+            mediaTag = `<video src="imagenes/${image.filename}" muted autoplay loop playsinline ${image.poster ? 'poster="imagenes/' + image.poster + '"' : ''}></video>`;
+        } else {
+            mediaTag = `<img src="imagenes/${image.filename}" alt="${image.title}">`;
+        }
+
+        const imageHtml = `
+            <div class="imagen-item" 
+                 data-type="${image.type}" 
+                 data-filename="${image.filename}" 
+                 data-title="${image.title}" 
+                 data-prompt="${image.prompt}" 
+                 ${image.poster ? 'data-poster="'+image.poster+'"' : ''}>
+                    ${mediaTag}
+            </div>`;
+        gallery.insertAdjacentHTML('beforeend', imageHtml);
+    });
+
+    const galleryItems = document.querySelectorAll('.imagen-item');
+
+    galleryItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const type = this.dataset.type;
+            const filename = this.dataset.filename;
+            const title = this.dataset.title;
+            const prompt = this.dataset.prompt;
+            const poster = this.dataset.poster;
+
+            modalMediaContainer.innerHTML = '';
+
+            if (type === "video") {
+                const videoElement = document.createElement('video');
+                videoElement.src = `imagenes/${filename}`;
+                videoElement.controls = true;
+                videoElement.autoplay = true;
+                videoElement.loop = true;
+                videoElement.muted = false;
+                videoElement.playsinline = true;
+                videoElement.classList.add('modal-content');
+                if (poster) videoElement.poster = `imagenes/${poster}`;
+                modalMediaContainer.appendChild(videoElement);
+            } else {
+                const imgElement = document.createElement('img');
+                imgElement.src = `imagenes/${filename}`;
+                imgElement.alt = title;
+                imgElement.classList.add('modal-content');
+                modalMediaContainer.appendChild(imgElement);
+            }
+
+            imageModal.style.display = "flex";
+        });
+    });
+
+    closeImageButton.addEventListener('click', function() {
+        imageModal.style.display = "none";
+        const currentVideo = modalMediaContainer.querySelector('video');
+        if (currentVideo) currentVideo.pause();
+    });
+
+    imageModal.addEventListener('click', function(event) {
+        if (event.target === imageModal) {
+            imageModal.style.display = "none";
+            const currentVideo = modalMediaContainer.querySelector('video');
+            if (currentVideo) currentVideo.pause();
+        }
+    });
+
+    openAboutMeButton.addEventListener('click', function(event) {
+        event.preventDefault(); 
+        aboutMeModal.style.display = "flex";
+    });
+
+    closeAboutMeButton.addEventListener('click', function() {
+        aboutMeModal.style.display = "none";
+    });
+
+    aboutMeModal.addEventListener('click', function(event) {
+        if (event.target === aboutMeModal) {
+            aboutMeModal.style.display = "none"; 
+        }
+    });
+});
+</script>
+</body>
+</html>
